@@ -1,0 +1,36 @@
+# Maintainer: APic
+# Last update : 2015-07-23
+# dejavu_font_paths.patch from https://aur.archlinux.org/packages/xcsoar-git/
+
+pkgname=xcsoar
+pkgver=6.7.9
+pkgrel=1
+pkgdesc="Installs the package for xcsoar."
+arch=('x86_64')
+depends=('sdl_image' 'sdl_ttf' 'sdl' 'curl' 'ttf-dejavu' 'zlib')
+license=('GPL2')
+
+source=("http://max.kellermann.name/download/xcsoar/releases/$pkgver/source/$pkgname-$pkgver.tar.bz2"
+	'warnings.mk.patch'
+	'dejavu_font_paths.patch')
+
+md5sums=('2f464ccf2c71e44fd46c62277d9fd5be'
+         '247e6127f6b1620e728cb06c2e9fe472'
+         '0182404b867c61217b5ec77311928c35')
+
+
+prepare(){
+    patch -b $srcdir/${pkgname}-${pkgver}/src/Screen/Custom/Files.cpp -i $startdir/dejavu_font_paths.patch
+    patch -b $srcdir/${pkgname}-${pkgver}/build/warnings.mk -i $startdir/warnings.mk.patch
+}
+
+build(){
+    cd $srcdir/${pkgname}-${pkgver}
+    make TARGET=UNIX DEBUG=y 
+}
+
+
+package() {
+    cd $srcdir/${pkgname}-${pkgver}    
+    make DESTDIR="$pkgdir/" install
+}
